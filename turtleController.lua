@@ -229,14 +229,14 @@ function turtleController:tryAction(string)
     end
 end
 
-function turtleController:findItem(compareFunction, searchedItem)
+function turtleController:findItem(compareFunction, ...)
     -- searchedItem is optional. Could be a string, table or whatever the CompareFunction needs
     local currentSlot = turtle.getSelectedSlot()
 
-    if (compareFunction(currentSlot, searchedItem)) then return currentSlot end
+    if (compareFunction(currentSlot, table.unpack(arg))) then return currentSlot end
 
     for i = 1, 16 do
-        if (compareFunction(i, searchedItem)) then turtle.select(currentSlot) return i end
+        if (compareFunction(i, table.unpack(arg))) then turtle.select(currentSlot) return i end
 
     end
 
