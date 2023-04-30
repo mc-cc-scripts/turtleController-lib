@@ -1,3 +1,10 @@
+-- Requirements
+---@class scm
+local scm = require('./scm')
+---@class eventCallStack
+local eventHandler = scm:load('eventCallStack')
+
+
 ---@class turtleController
 local turtleController = {}
 -- Important: Errorhandler as a Callback in Key: "errorHandler"
@@ -6,6 +13,8 @@ local turtleController = {}
 turtleController.freeRefuelSlot = true
 turtleController.refuelSlot = 1
 turtleController.canBeakblocks = false
+turtleController.moveEventDone = eventHandler('moveEvent')
+turtleController.actionEvent = eventHandler('actionEvent')
 
 -- Override if needed be
 turtleController.errorHandler = function(err)
@@ -25,7 +34,10 @@ turtleController.moveSet = {
     ["f"] = turtle.forward,
     ["tR"] = turtle.turnRight,
     ["tL"] = turtle.turnLeft,
-    ["tA"] = function() turtle.turnLeft() turtle.turnLeft() end,
+    ["tA"] = function()
+        turtle.turnLeft()
+        turtle.turnLeft()
+    end,
     ["u"] = turtle.up,
     ["d"] = turtle.down,
     ["b"] = turtle.back
@@ -63,7 +75,6 @@ turtleController.roation = {
 
 
 function turtleController:refuel(number)
-
     --WIP
     local oldSlot = turtle.getSelectedSlot()
     turtle.select(turtleController.refuelSlot)
@@ -73,11 +84,11 @@ function turtleController:refuel(number)
         if (self.freeRefuelSlot) then
             print("Finding Fuel")
             if pcall(
-                function()
-                    turtle.select(self:findFuel())
-                    couldRefuel = turtle.refuel(number)
-                end
-            ) then
+                    function()
+                        turtle.select(self:findFuel())
+                        couldRefuel = turtle.refuel(number)
+                    end
+                ) then
                 couldRefuel = true
             else
                 print('could not find Fuel');
@@ -87,17 +98,14 @@ function turtleController:refuel(number)
 
     turtle.select(oldSlot)
     return couldRefuel
-
 end
 
 function turtleController:goStraight(number, callBackAfterEach, parameter)
     --TODO Errorcatches
     for i = 1, number do
-
         turtle.dig()
         self:tryMove("f")
         if (callBackAfterEach) then callBackAfterEach(parameter) end
-
     end
 end
 
@@ -112,7 +120,6 @@ function turtleController:goRight(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goUp(number, callBackAfterEach, parameter)
-
     for i = 1, number do
         turtle.digUp()
         self:tryMove("u")
@@ -121,7 +128,6 @@ function turtleController:goUp(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goDown(number, callBackAfterEach, parameter)
-
     for i = 1, number do
         turtle.digDown()
         self:tryMove("d")
@@ -143,9 +149,7 @@ function turtleController:goBack(number, fast, callBackAfterEach, parameter)
 end
 
 function turtleController:run()
-
     --TODO: Wenn bildschirm zu klein wird.
-
 end
 
 --- From startingPoint:
@@ -167,7 +171,6 @@ function turtleController:changeRotationTo(goal, current)
     end
     current = current + currentModification
     return string, current % 4
-
 end
 
 --- CompactMove
@@ -175,7 +178,6 @@ end
 --- command, then number of times the command should run
 --- Example circle: "f3, u4, b3, d4"
 function turtleController:compactMove(path)
-
     for command in string.gmatch(path, '([^,]+)') do
         -- command: f3 + tr + f1
         local num = string.match(command, '%d+') or 1
@@ -216,17 +218,17 @@ function turtleController:tryMove(string)
             end
         end
     end
+    self.moveEventDone:invoke(string)
 end
 
 ---@param string actionSet
 ---@return boolean successful
 function turtleController:tryAction(string)
     if (self.actionSet[string]() == false) then
-
         --TODO duh
         return false
-
     end
+    self.actionEvent:invoke(string)
 end
 
 function turtleController:findItem(compareFunction, ...)
@@ -236,12 +238,13 @@ function turtleController:findItem(compareFunction, ...)
     if (compareFunction(currentSlot, table.unpack(arg))) then return currentSlot end
 
     for i = 1, 16 do
-        if (compareFunction(i, table.unpack(arg))) then turtle.select(currentSlot) return i end
-
+        if (compareFunction(i, table.unpack(arg))) then
+            turtle.select(currentSlot)
+            return i
+        end
     end
 
     return nil
-
 end
 
 -- turtle.inspect hat immer einen .name
@@ -263,18 +266,17 @@ function turtleController:compareInspect(compareItemA, compareItemB)
         bName = compareItemB;
     end
     return iName == bName;
-
 end
 
 function turtleController:findFuel()
-
-    local compareFunc = function(slot) turtle.select(slot) return turtle.refuel(0) end
+    local compareFunc = function(slot)
+        turtle.select(slot)
+        return turtle.refuel(0)
+    end
     return self:findItem(compareFunc)
-
 end
 
 function turtleController:findItemInInventory(searchedItem)
-
     local compFunc = function(slot, sItem)
         local item = turtle.getItemDetail(slot)
         if (item == nil) then return false end
@@ -306,7 +308,6 @@ end
 function turtleController:inspectDown()
     local _, ret = turtle.inspectDown();
     return ret;
-
 end
 
 return turtleController
