@@ -287,6 +287,15 @@ function turtleController:findItemInInventory(searchedItem)
     return self:findItem(compFunc, searchedItem)
 end
 
+function turtleController:findFirstOfTable(tblOfItems)
+    for _, item in pairs(tblOfItems) do
+        local found = self:findItemInInventory(item)
+        if found then
+            return found
+        end
+    end
+end
+
 function turtleController:findEmptySlot()
     local compFunc = function(slot)
         return turtle.getItemDetail(slot) == nil
