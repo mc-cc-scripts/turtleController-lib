@@ -163,14 +163,27 @@ function turtleController:changeRotationTo(goal, current)
         current = 0
     end
     local string = ""
-    local currentModification = goal - current
-    if (currentModification > 0) then
-        string = "tR" .. currentModification
-    elseif (currentModification < 0) then
-        string = "tL" .. -currentModification
+    if goal ~= current then
+        local diff = math.abs(goal - current)
+        if diff == 2 then
+            string = string .. "tA"
+        elseif diff == 3 then
+            if goal < current then
+                string = string .. "tR"
+            else
+                string = string .. "tL"
+            end
+        else
+            if goal > current then
+                string = string .. "tR"
+            else
+                string = string .. "tL"
+            end
+            string = string..diff
+        end
     end
-    current = current + currentModification
-    return string, current % 4
+    current = goal
+    return string, current
 end
 
 --- CompactMove
