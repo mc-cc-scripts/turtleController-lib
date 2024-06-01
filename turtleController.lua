@@ -12,7 +12,7 @@ local turtleController = {}
 
 turtleController.freeRefuelSlot = true
 turtleController.refuelSlot = 1
-turtleController.canBeakblocks = false
+turtleController.canBreakBlocks = false
 turtleController.moveEventDone = eventHandler('moveEvent')
 turtleController.actionEvent = eventHandler('actionEvent')
 
@@ -219,7 +219,7 @@ function turtleController:tryMove(string)
             else
                 self:tryMove(string)
             end
-        elseif self.canBeakblocks then
+        elseif self.canBreakBlocks then
             if (self.moveHandler[string]()) then
                 self:tryMove(string)
             elseif (self.errorHandler) then

@@ -41,5 +41,5 @@ Feel free to override the current default settings:
 ```lua
 turtleController.freeRefuelSlot = true
 turtleController.refuelSlot = 1
-turtleController.canBeakblocks = false
+turtleController.canBreakBlocks = false
 ```
