@@ -32,7 +32,7 @@ local success = turtleController:compactMove('f4, u2, b4, d2')
 
 ---
 
-## Importent things to know
+## Important things to know
 
 ---
 
