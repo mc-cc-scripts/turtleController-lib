@@ -24,7 +24,7 @@ local coalSlot = turtleController:findItemInInventory('minecraft:charcoal')
 
 `function turtleController:tryMove(<string>): boolean`
 
-Example: Going in a cirle
+Example: Going in a circle
 
 ```lua
 local success = turtleController:compactMove('f4, u2, b4, d2')
