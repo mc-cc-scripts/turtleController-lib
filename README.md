@@ -10,7 +10,7 @@ Refuels automaticly, if any fuel blocks are in the Inventory
 
 ---
 
-### find a item in the turtle-inventory
+### Find an item in the turtle-inventory
 
 `turtleController:findItemInInventory(<table>|<string>): number`
 
