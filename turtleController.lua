@@ -82,7 +82,6 @@ function turtleController:refuel(number)
 
     if couldRefuel == false then
         if (self.freeRefuelSlot) then
-            print("Finding Fuel")
             if pcall(
                     function()
                         turtle.select(self:findFuel())
@@ -208,7 +207,7 @@ end
 ---@param string moveSets
 function turtleController:tryMove(string)
     if (self.moveSet[string]() == false) then
-        if (turtle.getFuelLevel() == 0) then
+        if (turtle.getFuelLevel() < 1) then
             if (self:refuel(1) == false) then
                 -- TODO: Find new RefuelSlot, if allowed
                 if (self.errorHandler) then
