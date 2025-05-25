@@ -31,39 +31,41 @@ end
 ---| "b" # back
 
 turtleController.moveSet = {
-    ["f"] = turtle.forward,
-    ["tR"] = turtle.turnRight,
-    ["tL"] = turtle.turnLeft,
+    ["f"] = function() return turtle.forward() end,
+    ["tR"] = function() return turtle.turnRight() end,
+    ["tL"] = function() return turtle.turnLeft() end,
     ["tA"] = function()
         turtle.turnLeft()
         turtle.turnLeft()
     end,
-    ["u"] = turtle.up,
-    ["d"] = turtle.down,
-    ["b"] = turtle.back
+    ["u"] = function() return turtle.up() end,
+    ["d"] = function() return turtle.down() end,
+    ["b"] = function() return turtle.back() end
 }
 
 turtleController.moveHandler = {
-    ["f"] = turtle.dig,
-    ["u"] = turtle.digUp,
-    ["d"] = turtle.digDown,
+    ["f"] = function() return turtle.dig() end,
+    ["u"] = function() return turtle.digUp() end,
+    ["d"] = function() return turtle.digDown() end,
     ["b"] = function()
         self:tryMove('tA');
-        self:tryMove('f');
+        if not self:tryMove('f') then
+            return false
+        end
         self:tryMove('tA');
     end
 }
+
 
 ---@alias actionSet
 ---| "dig" # digForward
 ---| "digU" # digUp
 ---| "digD" # digDown
 
-
 turtleController.actionSet = {
-    ["dig"] = turtle.dig,
-    ["digU"] = turtle.digUp,
-    ["digD"] = turtle.digDown
+    ["dig"] = function() return turtle.dig() end,
+    ["digU"] = function() return turtle.digUp() end,
+    ["digD"] = function() return turtle.digDown() end
 }
 
 turtleController.roation = {
@@ -100,6 +102,7 @@ function turtleController:refuel(number)
 end
 
 function turtleController:goStraight(number, callBackAfterEach, parameter)
+    number = number or 1
     --TODO Errorcatches
     for i = 1, number do
         turtle.dig()
@@ -109,16 +112,19 @@ function turtleController:goStraight(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goLeft(number, callBackAfterEach, parameter)
+    number = number or 1
     self:tryMove("tL")
     self:goStraight(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goRight(number, callBackAfterEach, parameter)
+    number = number or 1
     self:tryMove("tR")
     self:goStraight(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goUp(number, callBackAfterEach, parameter)
+    number = number or 1
     for i = 1, number do
         turtle.digUp()
         self:tryMove("u")
@@ -127,6 +133,7 @@ function turtleController:goUp(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goDown(number, callBackAfterEach, parameter)
+    number = number or 1
     for i = 1, number do
         turtle.digDown()
         self:tryMove("d")
@@ -135,6 +142,7 @@ function turtleController:goDown(number, callBackAfterEach, parameter)
 end
 
 function turtleController:goBack(number, fast, callBackAfterEach, parameter)
+    number = number or 1
     if (fast and number > 1) then
         turtleController:tryMove('tA');
         turtleController:goStraight(number, callBackAfterEach, parameter);
@@ -155,7 +163,6 @@ end
 --- 0 forward, 1 right, 2 behind, 3 right ---
 --- y is Forward for relative Scans
 ---@param goal number 0 - 3
----@param string string string for move / compactMove
 ---@param current number optional. default = 0; 0 - 3
 function turtleController:changeRotationTo(goal, current)
     if current == nil then
@@ -241,6 +248,7 @@ function turtleController:tryAction(string)
         return false
     end
     self.actionEvent:invoke(string)
+    return true
 end
 
 function turtleController:findItem(compareFunction, ...)
